@@ -78,6 +78,7 @@ button:disabled {
 .main-panel,
 .side-panel,
 .panel-card,
+.form-view,
 .stat-card,
 .table-shell,
 .empty-state {
@@ -244,6 +245,49 @@ button:disabled {
   grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.55fr);
   gap: 20px;
   align-items: start;
+}
+
+.form-workspace {
+  max-width: 980px;
+}
+
+.form-view {
+  border-radius: var(--radius);
+  padding: 24px;
+}
+
+.form-view__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.6fr);
+  gap: 24px;
+  align-items: end;
+  margin-bottom: 18px;
+}
+
+.form-view__header h1 {
+  margin: 8px 0 0;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.form-view__header p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.back-button {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text);
+  font-weight: 800;
 }
 
 .main-panel,
@@ -745,17 +789,123 @@ textarea:focus {
   }
 
   .hero-section {
-    padding: 20px;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .hero-section h1 {
+    font-size: 2rem;
+  }
+
+  .hero-section p,
+  .helper-panel p {
+    margin-top: 8px;
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+
+  .hero-section .button {
+    width: 100%;
   }
 
   .stats-grid,
   .filter-bar,
   .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stats-grid {
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .stat-card {
+    min-height: 86px;
+    padding: 12px;
+  }
+
+  .stat-card::after {
+    inset: auto 10px 10px auto;
+    width: 30px;
+    height: 30px;
+  }
+
+  .stat-card span {
+    font-size: 0.76rem;
+    line-height: 1.25;
+  }
+
+  .stat-card strong {
+    margin-top: 10px;
+    font-size: 1.65rem;
+  }
+
+  .filter-bar,
+  .form-grid {
     grid-template-columns: 1fr;
   }
 
+  .tab-list {
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin: 0 -10px 14px;
+    overflow-x: auto;
+    padding: 0 10px 4px;
+    scrollbar-width: thin;
+  }
+
   .tab-button {
-    flex: 1 1 100%;
+    flex: 0 0 auto;
+    min-height: 38px;
+    padding: 0 12px;
+    white-space: nowrap;
+  }
+
+  .main-panel,
+  .side-panel,
+  .panel-card,
+  .form-view {
+    padding: 14px;
+  }
+
+  .form-workspace {
+    width: min(100% - 20px, 980px);
+  }
+
+  .form-view__header {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .form-view__header h1 {
+    font-size: 1.85rem;
+  }
+
+  .form-view__header p {
+    font-size: 0.92rem;
+  }
+
+  .asset-form {
+    gap: 12px;
+  }
+
+  .asset-form fieldset {
+    padding: 12px;
+  }
+
+  label {
+    gap: 6px;
+    font-size: 0.84rem;
+  }
+
+  input,
+  select {
+    height: 42px;
+  }
+
+  textarea {
+    min-height: 96px;
   }
 
   .field-wide {
@@ -779,6 +929,7 @@ textarea:focus {
   .asset-table tr {
     border-bottom: 1px solid var(--line);
     padding: 12px;
+    background: rgba(255, 255, 255, 0.58);
   }
 
   .asset-table td {
@@ -798,9 +949,78 @@ textarea:focus {
 
   .form-actions {
     flex-direction: column-reverse;
+    gap: 8px;
   }
 
   .form-actions .button {
     width: 100%;
+    min-height: 46px;
+  }
+
+  .table-actions button {
+    min-height: 40px;
+    padding: 0 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-shell,
+  .public-shell,
+  .form-workspace {
+    width: min(100% - 16px, 980px);
+    padding: 12px 0;
+  }
+
+  .top-header {
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+
+  .top-header span {
+    font-size: 0.82rem;
+  }
+
+  .hero-section h1 {
+    font-size: 1.75rem;
+  }
+
+  .hero-section p {
+    font-size: 0.88rem;
+  }
+
+  .stats-grid {
+    gap: 7px;
+  }
+
+  .stat-card {
+    min-height: 76px;
+    padding: 10px;
+  }
+
+  .stat-card span {
+    font-size: 0.7rem;
+  }
+
+  .stat-card strong {
+    margin-top: 8px;
+    font-size: 1.45rem;
+  }
+
+  .asset-table td {
+    grid-template-columns: 108px minmax(0, 1fr);
+    gap: 8px;
+    font-size: 0.9rem;
+  }
+
+  .table-actions {
+    gap: 6px;
+  }
+
+  .table-actions button {
+    flex: 1 1 auto;
+  }
+
+  .form-view__header h1 {
+    font-size: 1.6rem;
   }
 }

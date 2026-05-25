@@ -96,26 +96,38 @@ export default function Home() {
     setSelectedReport(undefined);
   };
 
+  const cancelAssetForm = () => {
+    if (mode === "edit" && selectedAsset) {
+      setMode("detail");
+      return;
+    }
+
+    setActiveTab("found");
+    closePanel();
+  };
+
   const handleAdd = (values: AssetFormValues) => {
     const timestamp = nowForInput();
-    setAssets((current) => [
-      {
-        ...values,
-        id: makeId(),
-        createdAt: timestamp,
-        updatedAt: timestamp,
-        history: [
-          {
-            time: timestamp,
-            actor: values.receivedBy,
-            action: "Tiếp nhận đồ vật nhặt được",
-            note: values.note || "Tạo phiếu đồ vật thất lạc.",
-          },
-        ],
-      },
-      ...current,
-    ]);
-    closePanel();
+    const newAsset: LostAsset = {
+      ...values,
+      id: makeId(),
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      history: [
+        {
+          time: timestamp,
+          actor: values.receivedBy,
+          action: "Tiếp nhận đồ vật nhặt được",
+          note: values.note || "Tạo phiếu đồ vật thất lạc.",
+        },
+      ],
+    };
+
+    setAssets((current) => [newAsset, ...current]);
+    setActiveTab("found");
+    setSelectedAsset(newAsset);
+    setSelectedReport(undefined);
+    setMode("detail");
   };
 
   const handleEdit = (values: AssetFormValues) => {
@@ -124,27 +136,29 @@ export default function Home() {
     }
 
     const timestamp = nowForInput();
+    const updatedAsset: LostAsset = {
+      ...selectedAsset,
+      ...values,
+      updatedAt: timestamp,
+      history: [
+        ...selectedAsset.history,
+        {
+          time: timestamp,
+          actor: values.receivedBy,
+          action: "Cập nhật thông tin đồ vật",
+          note: values.note || "Nhân viên đã chỉnh sửa phiếu.",
+        },
+      ],
+    };
+
     setAssets((current) =>
       current.map((asset) =>
-        asset.id === selectedAsset.id
-          ? {
-              ...asset,
-              ...values,
-              updatedAt: timestamp,
-              history: [
-                ...asset.history,
-                {
-                  time: timestamp,
-                  actor: values.receivedBy,
-                  action: "Cập nhật thông tin đồ vật",
-                  note: values.note || "Nhân viên đã chỉnh sửa phiếu.",
-                },
-              ],
-            }
-          : asset,
+        asset.id === selectedAsset.id ? updatedAsset : asset,
       ),
     );
-    closePanel();
+    setSelectedAsset(updatedAsset);
+    setSelectedReport(undefined);
+    setMode("detail");
   };
 
   const handleReturn = (handover: HandoverInfo) => {
@@ -194,6 +208,9 @@ export default function Home() {
   const openAssetPanel = (nextMode: PanelMode, asset?: LostAsset) => {
     setSelectedAsset(asset);
     setSelectedReport(undefined);
+    if (nextMode === "add" || nextMode === "edit") {
+      setActiveTab("found");
+    }
     setMode(nextMode);
   };
 
@@ -202,6 +219,51 @@ export default function Home() {
     setSelectedAsset(undefined);
     setMode("report");
   };
+
+  if (mode === "add" || mode === "edit") {
+    return (
+      <main className="app-shell form-workspace">
+        <header className="top-header">
+          <strong>Lost Found</strong>
+          <span>Module trực ban bảo vệ</span>
+        </header>
+
+        <section className="form-view">
+          <div className="form-view__header">
+            <div>
+              <button
+                className="back-button"
+                type="button"
+                onClick={cancelAssetForm}
+              >
+                ← Quay lại
+              </button>
+              <span className="eyebrow">Đồ vật nhặt được</span>
+              <h1>
+                {mode === "add"
+                  ? "Tiếp nhận đồ vật nhặt được"
+                  : "Chỉnh sửa thông tin đồ vật"}
+              </h1>
+            </div>
+            <p>
+              Nhập thông tin rõ ràng để tổ bảo vệ dễ đối chiếu, lưu giữ và bàn
+              giao đúng người nhận đồ.
+            </p>
+          </div>
+
+          <AssetForm
+            initialAsset={mode === "edit" ? selectedAsset : undefined}
+            onSubmit={mode === "add" ? handleAdd : handleEdit}
+            onCancel={cancelAssetForm}
+            submitLabel={
+              mode === "add" ? "Lưu phiếu tiếp nhận" : "Lưu thay đổi"
+            }
+            cancelLabel={mode === "add" ? "Hủy nhập liệu" : "Hủy"}
+          />
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="app-shell">
@@ -382,22 +444,6 @@ export default function Home() {
                 người báo mất và xác nhận bàn giao khi đúng chủ sở hữu.
               </p>
             </div>
-          ) : null}
-
-          {mode === "add" ? (
-            <Panel title="Tiếp nhận đồ vật nhặt được" onClose={closePanel}>
-              <AssetForm onSubmit={handleAdd} onCancel={closePanel} />
-            </Panel>
-          ) : null}
-
-          {mode === "edit" && selectedAsset ? (
-            <Panel title="Sửa thông tin đồ vật" onClose={closePanel}>
-              <AssetForm
-                initialAsset={selectedAsset}
-                onSubmit={handleEdit}
-                onCancel={closePanel}
-              />
-            </Panel>
           ) : null}
 
           {mode === "detail" && selectedAsset ? (
