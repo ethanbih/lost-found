@@ -31,7 +31,7 @@ export default function AssetTable({
   if (assets.length === 0) {
     return (
       <div className="empty-state">
-        <h3>Không tìm thấy tài sản phù hợp</h3>
+        <h3>Không tìm thấy đồ vật phù hợp</h3>
         <p>Thử bỏ bớt bộ lọc hoặc kiểm tra lại từ khóa tìm kiếm.</p>
       </div>
     );
@@ -43,7 +43,7 @@ export default function AssetTable({
         <thead>
           <tr>
             <th>Mã phiếu</th>
-            <th>Tên tài sản</th>
+            <th>Tên đồ vật</th>
             <th>Loại</th>
             <th>Vị trí nhặt được</th>
             <th>Thời gian</th>
@@ -58,7 +58,7 @@ export default function AssetTable({
               <td data-label="Mã phiếu">
                 <strong>{asset.ticketCode}</strong>
               </td>
-              <td data-label="Tên tài sản">{asset.name}</td>
+              <td data-label="Tên đồ vật">{asset.name}</td>
               <td data-label="Loại">
                 {CATEGORY_LABELS[asset.category as AssetCategory]}
               </td>
@@ -81,7 +81,7 @@ export default function AssetTable({
                     onClick={() => onReturn(asset)}
                     disabled={asset.status === "returned"}
                   >
-                    Trả
+                    Bàn giao
                   </button>
                 </div>
               </td>

@@ -1,37 +1,44 @@
-import { STATUS_LABELS, type LostAsset } from "@/types/asset";
+import type { LostAsset } from "@/types/asset";
+import type { LostReport } from "@/types/lostReport";
 
 type AssetStatsProps = {
   assets: LostAsset[];
+  reports: LostReport[];
+  matchCount: number;
 };
 
-export default function AssetStats({ assets }: AssetStatsProps) {
+export default function AssetStats({
+  assets,
+  reports,
+  matchCount,
+}: AssetStatsProps) {
   const stats = [
-    { label: "Tổng tài sản", value: assets.length, tone: "total" },
     {
-      label: STATUS_LABELS.stored,
+      label: "Đồ vật đang lưu giữ",
       value: assets.filter((asset) => asset.status === "stored").length,
       tone: "stored",
     },
     {
-      label: STATUS_LABELS.returned,
+      label: "Báo mất đang tìm",
+      value: reports.filter((report) => report.status === "searching").length,
+      tone: "total",
+    },
+    { label: "Gợi ý trùng khớp", value: matchCount, tone: "matched" },
+    {
+      label: "Đã bàn giao",
       value: assets.filter((asset) => asset.status === "returned").length,
       tone: "returned",
     },
     {
-      label: STATUS_LABELS.pending_disposal,
+      label: "Chờ xử lý",
       value: assets.filter((asset) => asset.status === "pending_disposal")
         .length,
       tone: "pending",
     },
-    {
-      label: STATUS_LABELS.disposed,
-      value: assets.filter((asset) => asset.status === "disposed").length,
-      tone: "disposed",
-    },
   ];
 
   return (
-    <section className="stats-grid" aria-label="Thống kê tài sản">
+    <section className="stats-grid" aria-label="Thống kê đồ vật">
       {stats.map((item) => (
         <article className={`stat-card stat-card--${item.tone}`} key={item.label}>
           <span>{item.label}</span>

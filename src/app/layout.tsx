@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Quản lý tài sản thất lạc",
-  description: "Module quản lý tài sản thất lạc cho tổ bảo vệ",
+  title: "Quản lý đồ vật thất lạc",
+  description: "Module quản lý đồ vật thất lạc cho tổ bảo vệ",
 };
 
 export default function RootLayout({

@@ -57,7 +57,7 @@ export type AssetFormValues = Omit<
 
 export const STATUS_LABELS: Record<AssetStatus, string> = {
   stored: "Đang lưu giữ",
-  returned: "Đã trả",
+  returned: "Đã bàn giao",
   pending_disposal: "Chờ xử lý",
   disposed: "Đã xử lý",
 };

@@ -94,7 +94,7 @@ export default function AssetForm({
           />
         </label>
         <label>
-          <span>Tên tài sản</span>
+          <span>Tên đồ vật</span>
           <input
             name="name"
             defaultValue={values.name}
@@ -103,7 +103,7 @@ export default function AssetForm({
           />
         </label>
         <label>
-          <span>Loại tài sản</span>
+        <span>Loại đồ vật</span>
           <select name="category" defaultValue={values.category}>
             {categoryOptions.map(([value, label]) => (
               <option key={value} value={value}>
@@ -201,7 +201,7 @@ export default function AssetForm({
           Hủy
         </button>
         <button className="button button--primary" type="submit">
-          {initialAsset ? "Lưu thay đổi" : "Thêm tài sản"}
+          {initialAsset ? "Lưu thay đổi" : "Tiếp nhận đồ vật"}
         </button>
       </div>
     </form>

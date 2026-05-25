@@ -17,8 +17,8 @@ const formatDateTime = (value: string) =>
 export default function AssetDetail({ asset }: AssetDetailProps) {
   const assetRows = [
     ["Mã phiếu", asset.ticketCode],
-    ["Tên tài sản", asset.name],
-    ["Loại tài sản", CATEGORY_LABELS[asset.category]],
+    ["Tên đồ vật", asset.name],
+    ["Loại đồ vật", CATEGORY_LABELS[asset.category]],
     ["Mô tả chi tiết", asset.description],
     ["Ghi chú", asset.note || "Không có ghi chú"],
   ];
@@ -42,15 +42,15 @@ export default function AssetDetail({ asset }: AssetDetailProps) {
         <StatusBadge status={asset.status} />
       </div>
 
-      <DetailSection title="Thông tin tài sản" rows={assetRows} />
+      <DetailSection title="Thông tin đồ vật" rows={assetRows} />
       <DetailSection title="Thông tin tiếp nhận" rows={intakeRows} />
 
       {asset.handover ? (
         <section className="handover-box">
-          <h3>Thông tin người nhận</h3>
+          <h3>Thông tin người nhận đồ</h3>
           <dl className="detail-list">
             <div>
-              <dt>Người nhận</dt>
+              <dt>Người nhận đồ</dt>
               <dd>{asset.handover.receiverName}</dd>
             </div>
             <div>
@@ -66,7 +66,7 @@ export default function AssetDetail({ asset }: AssetDetailProps) {
               <dd>{asset.handover.handedOverBy}</dd>
             </div>
             <div>
-              <dt>Thời gian trả</dt>
+              <dt>Thời gian bàn giao</dt>
               <dd>{formatDateTime(asset.handover.returnedAt)}</dd>
             </div>
             <div>

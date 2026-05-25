@@ -6,7 +6,10 @@ import AssetDetail from "@/components/AssetDetail";
 import AssetForm from "@/components/AssetForm";
 import AssetStats from "@/components/AssetStats";
 import AssetTable from "@/components/AssetTable";
+import LostReportTable from "@/components/LostReportTable";
+import MatchSuggestions from "@/components/MatchSuggestions";
 import { mockAssets } from "@/mock/assets";
+import { mockLostReports } from "@/mock/lostReports";
 import {
   CATEGORY_LABELS,
   STATUS_LABELS,
@@ -16,8 +19,16 @@ import {
   type HandoverInfo,
   type LostAsset,
 } from "@/types/asset";
+import {
+  LOST_REPORT_STATUS_LABELS,
+  REPORTER_ROLE_LABELS,
+  type LostReport,
+  type LostReportStatus,
+} from "@/types/lostReport";
+import { buildMatchSuggestions } from "@/utils/matching";
 
-type PanelMode = "list" | "add" | "edit" | "detail" | "return";
+type PanelMode = "list" | "add" | "edit" | "detail" | "return" | "report";
+type ActiveTab = "found" | "reports" | "matches";
 
 const categoryOptions = Object.entries(CATEGORY_LABELS) as [
   AssetCategory,
@@ -31,14 +42,33 @@ const makeId = () =>
 
 const nowForInput = () => new Date().toISOString().slice(0, 16);
 
+const formatDateTime = (value?: string) =>
+  value
+    ? new Intl.DateTimeFormat("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(new Date(value))
+    : "Chưa ghi nhận";
+
 export default function Home() {
   const [assets, setAssets] = useState<LostAsset[]>(mockAssets);
+  const [lostReports, setLostReports] = useState<LostReport[]>(mockLostReports);
+  const [activeTab, setActiveTab] = useState<ActiveTab>("found");
   const [mode, setMode] = useState<PanelMode>("list");
   const [selectedAsset, setSelectedAsset] = useState<LostAsset | undefined>();
+  const [selectedReport, setSelectedReport] = useState<LostReport | undefined>();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<AssetStatus | "all">("all");
   const [categoryFilter, setCategoryFilter] = useState<AssetCategory | "all">(
     "all",
+  );
+
+  const matchSuggestions = useMemo(
+    () => buildMatchSuggestions(assets, lostReports),
+    [assets, lostReports],
   );
 
   const filteredAssets = useMemo(() => {
@@ -63,6 +93,7 @@ export default function Home() {
   const closePanel = () => {
     setMode("list");
     setSelectedAsset(undefined);
+    setSelectedReport(undefined);
   };
 
   const handleAdd = (values: AssetFormValues) => {
@@ -77,8 +108,8 @@ export default function Home() {
           {
             time: timestamp,
             actor: values.receivedBy,
-            action: "Tiếp nhận tài sản",
-            note: values.note || "Tạo phiếu tài sản thất lạc.",
+            action: "Tiếp nhận đồ vật nhặt được",
+            note: values.note || "Tạo phiếu đồ vật thất lạc.",
           },
         ],
       },
@@ -92,19 +123,20 @@ export default function Home() {
       return;
     }
 
+    const timestamp = nowForInput();
     setAssets((current) =>
       current.map((asset) =>
         asset.id === selectedAsset.id
           ? {
               ...asset,
               ...values,
-              updatedAt: nowForInput(),
+              updatedAt: timestamp,
               history: [
                 ...asset.history,
                 {
-                  time: nowForInput(),
+                  time: timestamp,
                   actor: values.receivedBy,
-                  action: "Cập nhật thông tin tài sản",
+                  action: "Cập nhật thông tin đồ vật",
                   note: values.note || "Nhân viên đã chỉnh sửa phiếu.",
                 },
               ],
@@ -133,8 +165,8 @@ export default function Home() {
                 {
                   time: handover.returnedAt,
                   actor: handover.handedOverBy,
-                  action: "Bàn giao tài sản",
-                  note: handover.handoverNote || "Đã xác nhận trả tài sản.",
+                  action: `Đã bàn giao đồ vật cho ${handover.receiverName}`,
+                  note: handover.handoverNote || "Đã xác nhận bàn giao đồ vật.",
                 },
               ],
             }
@@ -144,9 +176,31 @@ export default function Home() {
     closePanel();
   };
 
-  const openPanel = (nextMode: PanelMode, asset?: LostAsset) => {
+  const handleReportStatusChange = (
+    report: LostReport,
+    status: LostReportStatus,
+  ) => {
+    const timestamp = nowForInput();
+    setLostReports((current) =>
+      current.map((item) =>
+        item.id === report.id ? { ...item, status, updatedAt: timestamp } : item,
+      ),
+    );
+    if (selectedReport?.id === report.id) {
+      setSelectedReport({ ...report, status, updatedAt: timestamp });
+    }
+  };
+
+  const openAssetPanel = (nextMode: PanelMode, asset?: LostAsset) => {
     setSelectedAsset(asset);
+    setSelectedReport(undefined);
     setMode(nextMode);
+  };
+
+  const openReportPanel = (report: LostReport) => {
+    setSelectedReport(report);
+    setSelectedAsset(undefined);
+    setMode("report");
   };
 
   return (
@@ -159,105 +213,185 @@ export default function Home() {
       <section className="hero-section">
         <div>
           <span className="eyebrow">Tổ bảo vệ</span>
-          <h1>Quản lý tài sản thất lạc</h1>
+          <h1>Quản lý đồ vật thất lạc</h1>
           <p>
-            Ghi nhận, theo dõi lưu giữ và bàn giao tài sản cho bệnh viện hoặc
-            trung tâm với thao tác rõ ràng, dễ dùng.
+            Theo dõi đồ vật nhặt được, báo mất và bàn giao cho người nhận đồ.
           </p>
         </div>
         <button
           className="button button--primary"
           type="button"
-          onClick={() => openPanel("add")}
+          onClick={() => openAssetPanel("add")}
         >
-          Thêm tài sản
+          + Tiếp nhận đồ vật nhặt được
         </button>
       </section>
 
-      <AssetStats assets={assets} />
+      <AssetStats
+        assets={assets}
+        reports={lostReports}
+        matchCount={matchSuggestions.length}
+      />
+
+      <div className="tab-list" role="tablist" aria-label="Khu vực quản lý">
+        <button
+          className={activeTab === "found" ? "tab-button active" : "tab-button"}
+          type="button"
+          onClick={() => setActiveTab("found")}
+        >
+          Đồ vật nhặt được
+        </button>
+        <button
+          className={
+            activeTab === "reports" ? "tab-button active" : "tab-button"
+          }
+          type="button"
+          onClick={() => setActiveTab("reports")}
+        >
+          Báo mất đồ vật
+        </button>
+        <button
+          className={
+            activeTab === "matches" ? "tab-button active" : "tab-button"
+          }
+          type="button"
+          onClick={() => setActiveTab("matches")}
+        >
+          Gợi ý trùng khớp
+        </button>
+      </div>
 
       <section className="content-grid">
         <div className="main-panel">
-          <div className="panel-header">
-            <div>
-              <span className="eyebrow">Danh sách</span>
-              <h2>Tài sản thất lạc</h2>
-            </div>
-            <span className="result-count">{filteredAssets.length} kết quả</span>
-          </div>
+          {activeTab === "found" ? (
+            <>
+              <div className="panel-header">
+                <div>
+                  <span className="eyebrow">Danh sách</span>
+                  <h2>Đồ vật thất lạc</h2>
+                </div>
+                <span className="result-count">
+                  {filteredAssets.length} kết quả
+                </span>
+              </div>
 
-          <div className="filter-bar">
-            <label className="search-field">
-              <span>Tìm kiếm</span>
-              <input
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Nhập mã phiếu, tên tài sản hoặc mô tả"
+              <div className="filter-bar">
+                <label className="search-field">
+                  <span>Tìm kiếm</span>
+                  <input
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    placeholder="Nhập mã phiếu, tên đồ vật hoặc mô tả"
+                  />
+                </label>
+                <label>
+                  <span>Trạng thái</span>
+                  <select
+                    value={statusFilter}
+                    onChange={(event) =>
+                      setStatusFilter(event.target.value as AssetStatus | "all")
+                    }
+                  >
+                    <option value="all">Tất cả trạng thái</option>
+                    {statusOptions.map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>Loại đồ vật</span>
+                  <select
+                    value={categoryFilter}
+                    onChange={(event) =>
+                      setCategoryFilter(
+                        event.target.value as AssetCategory | "all",
+                      )
+                    }
+                  >
+                    <option value="all">Tất cả loại</option>
+                    {categoryOptions.map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <AssetTable
+                assets={filteredAssets}
+                onView={(asset) => openAssetPanel("detail", asset)}
+                onEdit={(asset) => openAssetPanel("edit", asset)}
+                onReturn={(asset) => openAssetPanel("return", asset)}
               />
-            </label>
-            <label>
-              <span>Trạng thái</span>
-              <select
-                value={statusFilter}
-                onChange={(event) =>
-                  setStatusFilter(event.target.value as AssetStatus | "all")
-                }
-              >
-                <option value="all">Tất cả trạng thái</option>
-                {statusOptions.map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              <span>Loại tài sản</span>
-              <select
-                value={categoryFilter}
-                onChange={(event) =>
-                  setCategoryFilter(event.target.value as AssetCategory | "all")
-                }
-              >
-                <option value="all">Tất cả loại</option>
-                {categoryOptions.map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
+            </>
+          ) : null}
 
-          <AssetTable
-            assets={filteredAssets}
-            onView={(asset) => openPanel("detail", asset)}
-            onEdit={(asset) => openPanel("edit", asset)}
-            onReturn={(asset) => openPanel("return", asset)}
-          />
+          {activeTab === "reports" ? (
+            <>
+              <div className="panel-header">
+                <div>
+                  <span className="eyebrow">Công khai</span>
+                  <h2>Báo mất đồ vật</h2>
+                </div>
+                <span className="result-count">
+                  {lostReports.length} báo mất
+                </span>
+              </div>
+              <LostReportTable
+                reports={lostReports}
+                onView={openReportPanel}
+                onStatusChange={handleReportStatusChange}
+              />
+            </>
+          ) : null}
+
+          {activeTab === "matches" ? (
+            <>
+              <div className="panel-header">
+                <div>
+                  <span className="eyebrow">Đối soát MVP</span>
+                  <h2>Gợi ý trùng khớp</h2>
+                </div>
+                <span className="result-count">
+                  {matchSuggestions.length} gợi ý
+                </span>
+              </div>
+              <MatchSuggestions
+                suggestions={matchSuggestions}
+                onViewAsset={(asset) => openAssetPanel("detail", asset)}
+                onViewReport={openReportPanel}
+                onContacted={(report) =>
+                  handleReportStatusChange(report, "contacted")
+                }
+                onReturnAsset={(asset) => openAssetPanel("return", asset)}
+              />
+            </>
+          ) : null}
         </div>
 
         <aside className="side-panel" aria-live="polite">
           {mode === "list" ? (
             <div className="helper-panel">
               <span className="eyebrow">Hướng dẫn nhanh</span>
-              <h2>Chọn một tài sản để xem chi tiết</h2>
+              <h2>Chọn một dòng để xem chi tiết</h2>
               <p>
-                Nhân viên có thể dùng các nút Xem, Sửa hoặc Trả trong bảng. Dữ
-                liệu hiện là mock frontend và sẽ trở về mặc định khi tải lại
-                trang.
+                Nhân viên có thể xem đồ vật nhặt được, theo dõi báo mất, gọi
+                người báo mất và xác nhận bàn giao khi đúng chủ sở hữu.
               </p>
             </div>
           ) : null}
 
           {mode === "add" ? (
-            <Panel title="Thêm tài sản mới" onClose={closePanel}>
+            <Panel title="Tiếp nhận đồ vật nhặt được" onClose={closePanel}>
               <AssetForm onSubmit={handleAdd} onCancel={closePanel} />
             </Panel>
           ) : null}
 
           {mode === "edit" && selectedAsset ? (
-            <Panel title="Sửa thông tin tài sản" onClose={closePanel}>
+            <Panel title="Sửa thông tin đồ vật" onClose={closePanel}>
               <AssetForm
                 initialAsset={selectedAsset}
                 onSubmit={handleEdit}
@@ -267,17 +401,26 @@ export default function Home() {
           ) : null}
 
           {mode === "detail" && selectedAsset ? (
-            <Panel title="Chi tiết tài sản" onClose={closePanel}>
+            <Panel title="Chi tiết đồ vật" onClose={closePanel}>
               <AssetDetail asset={selectedAsset} />
             </Panel>
           ) : null}
 
           {mode === "return" && selectedAsset ? (
-            <Panel title="Xác nhận đã trả tài sản" onClose={closePanel}>
+            <Panel title="Xác nhận bàn giao đồ vật" onClose={closePanel}>
               <ReturnForm
                 asset={selectedAsset}
                 onCancel={closePanel}
                 onSubmit={handleReturn}
+              />
+            </Panel>
+          ) : null}
+
+          {mode === "report" && selectedReport ? (
+            <Panel title="Chi tiết báo mất" onClose={closePanel}>
+              <LostReportDetail
+                report={selectedReport}
+                onStatusChange={handleReportStatusChange}
               />
             </Panel>
           ) : null}
@@ -340,11 +483,11 @@ function ReturnForm({
       </div>
       <div className="form-grid">
         <label>
-          <span>Họ tên người nhận</span>
+          <span>Họ tên người nhận đồ</span>
           <input name="receiverName" required placeholder="Nhập họ tên đầy đủ" />
         </label>
         <label>
-          <span>Số điện thoại người nhận</span>
+          <span>Số điện thoại người nhận đồ</span>
           <input name="receiverPhone" required placeholder="Nhập số điện thoại" />
         </label>
         <label>
@@ -365,7 +508,7 @@ function ReturnForm({
           <textarea
             name="handoverNote"
             rows={4}
-            placeholder="Ghi cách xác minh chủ sở hữu, tình trạng tài sản khi trả..."
+            placeholder="Ghi cách xác minh chủ sở hữu, tình trạng đồ vật khi bàn giao..."
           />
         </label>
       </div>
@@ -374,9 +517,56 @@ function ReturnForm({
           Hủy
         </button>
         <button className="button button--primary" type="submit">
-          Xác nhận đã trả
+          Xác nhận bàn giao đồ vật
         </button>
       </div>
     </form>
+  );
+}
+
+function LostReportDetail({
+  report,
+  onStatusChange,
+}: {
+  report: LostReport;
+  onStatusChange: (report: LostReport, status: LostReportStatus) => void;
+}) {
+  const rows = [
+    ["Mã báo mất", report.reportCode],
+    ["Đồ vật", report.itemName],
+    ["Loại", CATEGORY_LABELS[report.category]],
+    ["Mô tả", report.description],
+    ["Khu vực nghi mất", report.suspectedLocation],
+    ["Thời gian nghi mất", formatDateTime(report.suspectedLostAt)],
+    ["Người báo mất", report.reporterName],
+    ["Số điện thoại", report.reporterPhone],
+    ["Vai trò", REPORTER_ROLE_LABELS[report.reporterRole]],
+    ["Trạng thái", LOST_REPORT_STATUS_LABELS[report.status]],
+    ["Dấu hiệu nhận biết", report.identifyingMarks || "Không có"],
+    ["Ghi chú thêm", report.note || "Không có"],
+  ];
+
+  return (
+    <div className="detail-panel">
+      <dl className="detail-list">
+        {rows.map(([label, value]) => (
+          <div key={label}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
+      <div className="table-actions">
+        <button type="button" onClick={() => onStatusChange(report, "contacted")}>
+          Đánh dấu đã liên hệ
+        </button>
+        <button type="button" onClick={() => onStatusChange(report, "resolved")}>
+          Đánh dấu đã xử lý
+        </button>
+        <button type="button" onClick={() => onStatusChange(report, "cancelled")}>
+          Hủy báo mất
+        </button>
+      </div>
+    </div>
   );
 }

@@ -22,7 +22,7 @@ export const mockAssets: LostAsset[] = [
       {
         time: "2026-05-24T09:35",
         actor: "Nguyễn Văn Minh",
-        action: "Tiếp nhận tài sản",
+        action: "Tiếp nhận đồ vật nhặt được",
         note: "Lưu tại Tủ A - Ngăn 02.",
       },
     ],
@@ -47,13 +47,13 @@ export const mockAssets: LostAsset[] = [
       {
         time: "2026-05-23T14:25",
         actor: "Phạm Quốc Bảo",
-        action: "Tiếp nhận tài sản",
+        action: "Tiếp nhận đồ vật nhặt được",
         note: "Cất tại Tủ B - Ngăn 01.",
       },
       {
         time: "2026-05-23T17:40",
         actor: "Phạm Quốc Bảo",
-        action: "Bàn giao tài sản",
+        action: "Đã bàn giao đồ vật cho Lê Ngọc Lan",
         note: "Người nhận mở khóa máy và đối chiếu CCCD khớp thông tin.",
       },
     ],
@@ -86,7 +86,7 @@ export const mockAssets: LostAsset[] = [
       {
         time: "2026-05-22T12:00",
         actor: "Đỗ Anh Tuấn",
-        action: "Tiếp nhận tài sản",
+        action: "Tiếp nhận đồ vật nhặt được",
       },
     ],
   },
@@ -110,7 +110,7 @@ export const mockAssets: LostAsset[] = [
       {
         time: "2026-05-20T18:20",
         actor: "Nguyễn Văn Minh",
-        action: "Tiếp nhận tài sản",
+        action: "Tiếp nhận đồ vật nhặt được",
       },
       {
         time: "2026-05-25T08:00",
@@ -140,7 +140,7 @@ export const mockAssets: LostAsset[] = [
       {
         time: "2026-05-18T10:45",
         actor: "Võ Thị Mai",
-        action: "Tiếp nhận tài sản",
+        action: "Tiếp nhận đồ vật nhặt được",
       },
       {
         time: "2026-05-25T09:15",
@@ -170,7 +170,7 @@ export const mockAssets: LostAsset[] = [
       {
         time: "2026-05-25T08:05",
         actor: "Đỗ Anh Tuấn",
-        action: "Tiếp nhận tài sản",
+        action: "Tiếp nhận đồ vật nhặt được",
         note: "Đã niêm phong và cất vào két trực ban.",
       },
     ],
