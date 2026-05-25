@@ -47,7 +47,7 @@ export default function Home() {
     return assets.filter((asset) => {
       const matchesSearch =
         normalizedSearch.length === 0 ||
-        [asset.ticketCode, asset.name, asset.description]
+        [asset.ticketCode, asset.name, asset.description, asset.note]
           .join(" ")
           .toLowerCase()
           .includes(normalizedSearch);
@@ -73,6 +73,14 @@ export default function Home() {
         id: makeId(),
         createdAt: timestamp,
         updatedAt: timestamp,
+        history: [
+          {
+            time: timestamp,
+            actor: values.receivedBy,
+            action: "Tiếp nhận tài sản",
+            note: values.note || "Tạo phiếu tài sản thất lạc.",
+          },
+        ],
       },
       ...current,
     ]);
@@ -91,6 +99,15 @@ export default function Home() {
               ...asset,
               ...values,
               updatedAt: nowForInput(),
+              history: [
+                ...asset.history,
+                {
+                  time: nowForInput(),
+                  actor: values.receivedBy,
+                  action: "Cập nhật thông tin tài sản",
+                  note: values.note || "Nhân viên đã chỉnh sửa phiếu.",
+                },
+              ],
             }
           : asset,
       ),
@@ -111,6 +128,15 @@ export default function Home() {
               status: "returned",
               handover,
               updatedAt: handover.returnedAt,
+              history: [
+                ...asset.history,
+                {
+                  time: handover.returnedAt,
+                  actor: handover.handedOverBy,
+                  action: "Bàn giao tài sản",
+                  note: handover.handoverNote || "Đã xác nhận trả tài sản.",
+                },
+              ],
             }
           : asset,
       ),
@@ -125,6 +151,11 @@ export default function Home() {
 
   return (
     <main className="app-shell">
+      <header className="top-header">
+        <strong>Lost Found</strong>
+        <span>Module trực ban bảo vệ</span>
+      </header>
+
       <section className="hero-section">
         <div>
           <span className="eyebrow">Tổ bảo vệ</span>

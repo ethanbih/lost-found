@@ -13,10 +13,19 @@ export const mockAssets: LostAsset[] = [
     description:
       "Ví da có CCCD, thẻ bảo hiểm y tế và một số giấy tờ cá nhân.",
     storageLocation: "Tủ A - Ngăn 02",
-    reporterName: "Trần Thị Hoa",
-    reporterPhone: "0901234567",
+    finderName: "Trần Thị Hoa",
+    finderPhone: "0901234567",
+    note: "Đã niêm phong túi giấy tờ khi tiếp nhận.",
     createdAt: "2026-05-24T09:35",
     updatedAt: "2026-05-24T09:35",
+    history: [
+      {
+        time: "2026-05-24T09:35",
+        actor: "Nguyễn Văn Minh",
+        action: "Tiếp nhận tài sản",
+        note: "Lưu tại Tủ A - Ngăn 02.",
+      },
+    ],
   },
   {
     id: "asset-002",
@@ -29,8 +38,25 @@ export const mockAssets: LostAsset[] = [
     status: "returned",
     description: "Máy có ốp trong suốt, màn hình khóa hiển thị tên Lan.",
     storageLocation: "Tủ B - Ngăn 01",
+    finderName: "Lê Hoàng Nam",
+    finderPhone: "0933333444",
+    note: "Máy còn pin, không mở khóa khi tiếp nhận.",
     createdAt: "2026-05-23T14:25",
     updatedAt: "2026-05-23T17:40",
+    history: [
+      {
+        time: "2026-05-23T14:25",
+        actor: "Phạm Quốc Bảo",
+        action: "Tiếp nhận tài sản",
+        note: "Cất tại Tủ B - Ngăn 01.",
+      },
+      {
+        time: "2026-05-23T17:40",
+        actor: "Phạm Quốc Bảo",
+        action: "Bàn giao tài sản",
+        note: "Người nhận mở khóa máy và đối chiếu CCCD khớp thông tin.",
+      },
+    ],
     handover: {
       receiverName: "Lê Ngọc Lan",
       receiverPhone: "0918888999",
@@ -51,9 +77,18 @@ export const mockAssets: LostAsset[] = [
     status: "stored",
     description: "Balo có áo khoác, sổ khám bệnh và bình nước.",
     storageLocation: "Kệ đồ lớn - Ô 04",
-    reporterName: "Nhân viên nhà thuốc",
+    finderName: "Nhân viên nhà thuốc",
+    finderPhone: "02838990000",
+    note: "Balo chưa có người đến nhận.",
     createdAt: "2026-05-22T12:00",
     updatedAt: "2026-05-22T12:00",
+    history: [
+      {
+        time: "2026-05-22T12:00",
+        actor: "Đỗ Anh Tuấn",
+        action: "Tiếp nhận tài sản",
+      },
+    ],
   },
   {
     id: "asset-004",
@@ -66,8 +101,24 @@ export const mockAssets: LostAsset[] = [
     status: "pending_disposal",
     description: "Một chìa khóa xe máy kèm móc khóa nhựa màu đỏ.",
     storageLocation: "Tủ A - Ngăn 05",
+    finderName: "Nguyễn Thị Hạnh",
+    finderPhone: "0902222333",
+    note: "Chờ xử lý theo quy định do quá thời hạn thông báo.",
     createdAt: "2026-05-20T18:20",
     updatedAt: "2026-05-25T08:00",
+    history: [
+      {
+        time: "2026-05-20T18:20",
+        actor: "Nguyễn Văn Minh",
+        action: "Tiếp nhận tài sản",
+      },
+      {
+        time: "2026-05-25T08:00",
+        actor: "Nguyễn Văn Minh",
+        action: "Chuyển trạng thái chờ xử lý",
+        note: "Chưa xác minh được chủ sở hữu.",
+      },
+    ],
   },
   {
     id: "asset-005",
@@ -80,8 +131,24 @@ export const mockAssets: LostAsset[] = [
     status: "disposed",
     description: "Hộp tai nghe màu trắng, không có tên nhận diện.",
     storageLocation: "Tủ B - Ngăn 03",
+    finderName: "Võ Thị Mai",
+    finderPhone: "0914444555",
+    note: "Đã xử lý theo biên bản nội bộ.",
     createdAt: "2026-05-18T10:45",
     updatedAt: "2026-05-25T09:15",
+    history: [
+      {
+        time: "2026-05-18T10:45",
+        actor: "Võ Thị Mai",
+        action: "Tiếp nhận tài sản",
+      },
+      {
+        time: "2026-05-25T09:15",
+        actor: "Võ Thị Mai",
+        action: "Đã xử lý",
+        note: "Hoàn tất biên bản xử lý.",
+      },
+    ],
   },
   {
     id: "asset-006",
@@ -94,9 +161,18 @@ export const mockAssets: LostAsset[] = [
     status: "stored",
     description: "Phong bì trắng có tiền mặt, đã niêm phong khi tiếp nhận.",
     storageLocation: "Két trực ban",
-    reporterName: "Bùi Thanh Sơn",
-    reporterPhone: "0987654321",
+    finderName: "Bùi Thanh Sơn",
+    finderPhone: "0987654321",
+    note: "Không ghi số tiền trên màn hình danh sách, chỉ lưu trong biên bản.",
     createdAt: "2026-05-25T08:05",
     updatedAt: "2026-05-25T08:05",
+    history: [
+      {
+        time: "2026-05-25T08:05",
+        actor: "Đỗ Anh Tuấn",
+        action: "Tiếp nhận tài sản",
+        note: "Đã niêm phong và cất vào két trực ban.",
+      },
+    ],
   },
 ];

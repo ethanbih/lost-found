@@ -23,6 +23,13 @@ export type HandoverInfo = {
   returnedAt: string;
 };
 
+export type ProcessHistoryItem = {
+  time: string;
+  actor: string;
+  action: string;
+  note?: string;
+};
+
 export type LostAsset = {
   id: string;
   ticketCode: string;
@@ -34,16 +41,18 @@ export type LostAsset = {
   status: AssetStatus;
   description: string;
   storageLocation: string;
-  reporterName?: string;
-  reporterPhone?: string;
+  finderName: string;
+  finderPhone: string;
+  note?: string;
   createdAt: string;
   updatedAt: string;
+  history: ProcessHistoryItem[];
   handover?: HandoverInfo;
 };
 
 export type AssetFormValues = Omit<
   LostAsset,
-  "id" | "createdAt" | "updatedAt" | "handover"
+  "id" | "createdAt" | "updatedAt" | "history" | "handover"
 >;
 
 export const STATUS_LABELS: Record<AssetStatus, string> = {

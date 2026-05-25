@@ -57,6 +57,23 @@ button:disabled {
   padding: 32px 0;
 }
 
+.top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  color: var(--muted);
+}
+
+.top-header strong {
+  color: var(--text);
+  font-size: 1.05rem;
+}
+
+.top-header span {
+  font-weight: 700;
+}
+
 .hero-section,
 .main-panel,
 .side-panel,
@@ -415,6 +432,11 @@ textarea:focus {
   margin: 0;
 }
 
+.detail-section h3,
+.handover-box h3 {
+  margin: 0 0 12px;
+}
+
 .detail-list div {
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -438,8 +460,38 @@ textarea:focus {
   padding-top: 14px;
 }
 
-.handover-box h3 {
-  margin: 0 0 12px;
+.history-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.history-list li {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.history-list time,
+.history-list span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.history-list strong {
+  display: block;
+  margin: 4px 0;
+}
+
+.history-list p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
 }
 
 .return-summary {
@@ -498,6 +550,7 @@ textarea:focus {
   }
 
   .hero-section,
+  .top-header,
   .panel-header,
   .panel-card__header,
   .detail-heading {

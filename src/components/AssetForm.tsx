@@ -30,8 +30,9 @@ const emptyValues: AssetFormValues = {
   status: "stored",
   description: "",
   storageLocation: "",
-  reporterName: "",
-  reporterPhone: "",
+  finderName: "",
+  finderPhone: "",
+  note: "",
 };
 
 const toFormValues = (asset?: LostAsset): AssetFormValues =>
@@ -46,8 +47,9 @@ const toFormValues = (asset?: LostAsset): AssetFormValues =>
         status: asset.status,
         description: asset.description,
         storageLocation: asset.storageLocation,
-        reporterName: asset.reporterName ?? "",
-        reporterPhone: asset.reporterPhone ?? "",
+        finderName: asset.finderName,
+        finderPhone: asset.finderPhone,
+        note: asset.note ?? "",
       }
     : emptyValues;
 
@@ -75,8 +77,9 @@ export default function AssetForm({
           status: String(formData.get("status")) as AssetStatus,
           description: String(formData.get("description") ?? "").trim(),
           storageLocation: String(formData.get("storageLocation") ?? "").trim(),
-          reporterName: String(formData.get("reporterName") ?? "").trim(),
-          reporterPhone: String(formData.get("reporterPhone") ?? "").trim(),
+          finderName: String(formData.get("finderName") ?? "").trim(),
+          finderPhone: String(formData.get("finderPhone") ?? "").trim(),
+          note: String(formData.get("note") ?? "").trim(),
         });
       }}
     >
@@ -156,21 +159,40 @@ export default function AssetForm({
           />
         </label>
         <label>
-          <span>Người báo nhặt được</span>
-          <input name="reporterName" defaultValue={values.reporterName} />
+          <span>Người nhặt được</span>
+          <input
+            name="finderName"
+            defaultValue={values.finderName}
+            placeholder="Họ tên người nhặt được"
+            required
+          />
         </label>
         <label>
-          <span>Số điện thoại người báo</span>
-          <input name="reporterPhone" defaultValue={values.reporterPhone} />
+          <span>Số điện thoại người nhặt được</span>
+          <input
+            name="finderPhone"
+            defaultValue={values.finderPhone}
+            placeholder="Số điện thoại liên hệ"
+            required
+          />
         </label>
         <label className="field-wide">
-          <span>Mô tả tài sản</span>
+          <span>Mô tả chi tiết</span>
           <textarea
             name="description"
             defaultValue={values.description}
             rows={4}
             placeholder="Ghi đặc điểm nhận dạng, giấy tờ đi kèm, tình trạng..."
             required
+          />
+        </label>
+        <label className="field-wide">
+          <span>Ghi chú</span>
+          <textarea
+            name="note"
+            defaultValue={values.note}
+            rows={3}
+            placeholder="Ghi lưu ý nội bộ, tình trạng niêm phong, cách lưu giữ..."
           />
         </label>
       </div>

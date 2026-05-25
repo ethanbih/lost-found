@@ -15,17 +15,21 @@ const formatDateTime = (value: string) =>
   }).format(new Date(value));
 
 export default function AssetDetail({ asset }: AssetDetailProps) {
-  const rows = [
+  const assetRows = [
     ["Mã phiếu", asset.ticketCode],
     ["Tên tài sản", asset.name],
     ["Loại tài sản", CATEGORY_LABELS[asset.category]],
+    ["Mô tả chi tiết", asset.description],
+    ["Ghi chú", asset.note || "Không có ghi chú"],
+  ];
+
+  const intakeRows = [
     ["Vị trí nhặt được", asset.foundLocation],
     ["Thời gian nhặt được", formatDateTime(asset.foundAt)],
+    ["Người nhặt được", asset.finderName],
+    ["Số điện thoại người nhặt được", asset.finderPhone],
     ["Người tiếp nhận", asset.receivedBy],
     ["Nơi lưu giữ", asset.storageLocation],
-    ["Người báo nhặt được", asset.reporterName || "Chưa ghi nhận"],
-    ["Số điện thoại người báo", asset.reporterPhone || "Chưa ghi nhận"],
-    ["Mô tả", asset.description],
   ];
 
   return (
@@ -38,18 +42,12 @@ export default function AssetDetail({ asset }: AssetDetailProps) {
         <StatusBadge status={asset.status} />
       </div>
 
-      <dl className="detail-list">
-        {rows.map(([label, value]) => (
-          <div key={label}>
-            <dt>{label}</dt>
-            <dd>{value}</dd>
-          </div>
-        ))}
-      </dl>
+      <DetailSection title="Thông tin tài sản" rows={assetRows} />
+      <DetailSection title="Thông tin tiếp nhận" rows={intakeRows} />
 
       {asset.handover ? (
         <section className="handover-box">
-          <h3>Thông tin bàn giao</h3>
+          <h3>Thông tin người nhận</h3>
           <dl className="detail-list">
             <div>
               <dt>Người nhận</dt>
@@ -78,6 +76,42 @@ export default function AssetDetail({ asset }: AssetDetailProps) {
           </dl>
         </section>
       ) : null}
+
+      <section className="handover-box">
+        <h3>Lịch sử xử lý</h3>
+        <ol className="history-list">
+          {asset.history.map((item) => (
+            <li key={`${item.time}-${item.action}`}>
+              <time>{formatDateTime(item.time)}</time>
+              <strong>{item.action}</strong>
+              <span>{item.actor}</span>
+              {item.note ? <p>{item.note}</p> : null}
+            </li>
+          ))}
+        </ol>
+      </section>
     </div>
+  );
+}
+
+function DetailSection({
+  title,
+  rows,
+}: {
+  title: string;
+  rows: string[][];
+}) {
+  return (
+    <section className="detail-section">
+      <h3>{title}</h3>
+      <dl className="detail-list">
+        {rows.map(([label, value]) => (
+          <div key={label}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
   );
 }
